@@ -19,4 +19,30 @@ const signup = async (req, res) => {
     })
 };
 
-export {signup};
+const signin = async (req, res) => {
+    const { userName, password } = req.body
+
+    const user = await usersModel.findOne({userName: userName})
+
+    if(!user){
+        res.status(401).json({
+            "errorMsg":"Invalid username or password"
+        })
+        return
+    }
+
+    const isValidPassword = await bcrypt.compare(password,user.password)
+    if (!isValidPassword){
+        res.status(401).json({
+            "errorMsg":"Invalid username or password"
+        })
+        return
+    }
+
+    const webToken = createToken(user._id);
+    res.status(200).json({
+        "jwtToken": webToken,
+    })
+};
+
+export {signup,signin};
