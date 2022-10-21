@@ -38,5 +38,18 @@ async function updateUserDetail(req,res) {
 
     res.sendStatus(200)
 }
+async function deleteUser(req,res) {
+    const userId = req.params.id
+    // check if user is authorized to do this
+    if (userId !== req.body.userId){
+        res.status(403).json({
+            errorMsg: "Not authorized"
+        })
+        return
+    }
 
-export {getUserDetail, updateUserDetail}
+    await usersModel.findByIdAndDelete(userId)
+    res.sendStatus(200)
+}
+
+export {getUserDetail, updateUserDetail, deleteUser}
