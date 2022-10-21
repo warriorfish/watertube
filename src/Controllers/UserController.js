@@ -18,4 +18,25 @@ async function getUserDetail(req, res) {
     })
 }
 
-export {getUserDetail}
+async function updateUserDetail(req,res) {
+    const userId = req.params.id
+    const {userName,password,email,userImg} = req.body
+    // check if user is authorized to do this
+    if (userId !== req.body.userId){
+        res.status(403).json({
+            errorMsg: "Not authorized"
+        })
+        return
+    }
+
+    await usersModel.findByIdAndUpdate(userId,{
+        userName: userName,
+        password: password,
+        email: email,
+        userImg: userImg,
+    })
+
+    res.sendStatus(200)
+}
+
+export {getUserDetail, updateUserDetail}
