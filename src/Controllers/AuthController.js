@@ -11,7 +11,6 @@ const signup = async (req, res) => {
         password: encPassword,
     })
     const userData = await user.save()
-    console.log(`Created user successfully with id: ${userData._id}`)
 
     const webToken = createToken(userData._id);
     res.status(200).json({

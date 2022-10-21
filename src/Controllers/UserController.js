@@ -1,4 +1,5 @@
 import express from 'express'
+import bcrypt from 'bcrypt'
 import usersModel from '../Models/user.js'
 
 async function getUserDetail(req, res) {
@@ -20,7 +21,7 @@ async function getUserDetail(req, res) {
 
 async function updateUserDetail(req,res) {
     const userId = req.params.id
-    const {userName,password,email,userImg} = req.body
+    const {userName,email,userImg} = req.body
     // check if user is authorized to do this
     if (userId !== req.body.userId){
         res.status(403).json({
@@ -31,13 +32,34 @@ async function updateUserDetail(req,res) {
 
     await usersModel.findByIdAndUpdate(userId,{
         userName: userName,
-        password: password,
         email: email,
         userImg: userImg,
     })
 
     res.sendStatus(200)
 }
+
+async function updateUserPassword(req,res) {
+    const userId = req.params.id
+    const {oldPassword,newPassword} = req.body
+    const user = await usersModel.findById(userId)
+    
+    // check if user is authorized to do this
+    const isValidPassword = await bcrypt.compare(oldPassword,user.password)
+    if(!isValidPassword) {
+        res.sendStatus(403)
+        return
+    }
+
+    const encPassword = await bcrypt.hash(newPassword,10)
+    
+    await usersModel.findByIdAndUpdate(userId,{
+        password : encPassword,
+    })
+
+    res.sendStatus(200)
+}
+
 async function deleteUser(req,res) {
     const userId = req.params.id
     // check if user is authorized to do this
@@ -52,4 +74,4 @@ async function deleteUser(req,res) {
     res.sendStatus(200)
 }
 
-export {getUserDetail, updateUserDetail, deleteUser}
+export {getUserDetail, updateUserDetail, updateUserPassword, deleteUser}
