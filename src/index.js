@@ -1,6 +1,7 @@
 import express from 'express'
 import mongoose from 'mongoose'
 import dotenv from 'dotenv'
+import morgan from 'morgan'
 import userRouter from './Routers/UserRouter.js'
 import authRouter from './Routers/authRouter.js'
 
@@ -17,6 +18,8 @@ mongoose
     })
 
 app.use(express.json())
+
+app.use(morgan('combined'))
 
 app.use('/api/users', userRouter)
 app.use('/api/auth', authRouter)
