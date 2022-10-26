@@ -74,4 +74,38 @@ async function deleteUser(req,res) {
     res.sendStatus(200)
 }
 
-export {getUserDetail, updateUserDetail, updateUserPassword, deleteUser}
+async function alterSubscription(req,res) {
+    const channelId = req.params.id
+    const userId = req.body.userId
+
+    if (channelId === userId) {
+        res.status(403).json({
+            errorMsg: "Can not subscribe own channel"
+        })
+        return
+    }
+
+    const channel = await usersModel.findById(channelId)
+    const userData = await usersModel.findById(userId)
+    const isNotSubscribed = channel.subscribers.every(id => {
+        return id !== userId
+    })
+
+    if(isNotSubscribed) {
+        userData.subscribedChannels.push(channelId)
+        channel.subscribers.push(userId)
+    }
+
+    else{
+        userData.subscribedChannels.pop(channelId)
+        channel.subscribers.pop(userId)
+    }
+
+    await userData.save()
+    await channel.save()
+
+    res.sendStatus(200)
+
+}
+
+export {getUserDetail, updateUserDetail, updateUserPassword, deleteUser,alterSubscription}

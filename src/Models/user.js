@@ -25,12 +25,12 @@ const userSchema = new mongoose.Schema({
     },
 
     subscribers: {
-        type: Number,
-        default: 0,
+        type: [String],
+        default: [],
     },
 
     subscribedChannels: {
-        type: ['userSchema'],
+        type: [String],
         default: [],
     },
 })

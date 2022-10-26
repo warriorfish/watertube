@@ -35,4 +35,5 @@ function validateToken(req,res,next) {
     })
 }
 
+
 export { createToken,validateToken }
