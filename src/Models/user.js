@@ -33,6 +33,11 @@ const userSchema = new mongoose.Schema({
         type: [String],
         default: [],
     },
+
+    videos: {
+        type: [String],
+        default: [],
+    },
 })
 
 const usersModel = mongoose.model('User', userSchema)
