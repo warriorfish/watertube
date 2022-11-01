@@ -1,12 +1,19 @@
 import express from 'express'
 import multer from 'multer'
 import { uuid } from 'uuidv4'
-import { createVideo} from '../Controllers/VideoController.js'
+import { createVideo, getVideoMetadata} from '../Controllers/VideoController.js'
 import { validateToken} from '../utils.js'
 
 const storage = multer.diskStorage({
     destination: function (req, file, cb) {
-        cb(null, 'uploads/')
+        if(file.mimetype === 'image/jpeg' || file.mimetype === 'image/png')
+        {
+            cb(null,'uploads/thumbnails/')
+        }
+        else if(file.mimetype === 'video/mp4')
+        {
+            cb(null,'uploads/videos/')
+        }
       },
     filename: function (req, file, cb) {
         if(file.mimetype === 'video/mp4')
@@ -47,5 +54,6 @@ router.post('/', uploadHandler.fields([
     {name: 'thumb', maxCount: 1,},
 ]), validateToken, createVideo)
 
+router.get('/:id',getVideoMetadata)
 
 export default router
