@@ -108,4 +108,24 @@ async function alterSubscription(req,res) {
 
 }
 
-export {getUserDetail, updateUserDetail, updateUserPassword, deleteUser,alterSubscription}
+async function uploadUserIcon(req,res) {
+    const userId = req.body.userId
+    const channelId = req.params.id
+
+    if(userId !== channelId){
+        res.status(403).json({
+            error: "Can only update own channel icon"
+        })
+        return
+    }
+
+    const user = await usersModel.findById(userId)
+
+    const icon = req.file
+
+    user.userImg = `uploads/usericons/${icon.filename}`
+    await user.save()
+    res.sendStatus(200)
+}
+
+export {getUserDetail, updateUserDetail, updateUserPassword, deleteUser,alterSubscription, uploadUserIcon}
