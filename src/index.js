@@ -6,6 +6,7 @@ import multer from 'multer'
 import userRouter from './Routers/UserRouter.js'
 import authRouter from './Routers/authRouter.js'
 import videoRouter from './Routers/VideoRouter.js'
+import CommentRouter from './Routers/CommentRouter.js'
 
 dotenv.config()
 
@@ -29,6 +30,7 @@ app.use(morgan('combined'))
 app.use('/api/users', userRouter)
 app.use('/api/auth', authRouter)
 app.use('/api/video',videoRouter)
+app.use('/api/comment',CommentRouter)
 
 app.use('/test',upload.single("fileData"),(req,res)=>{
     console.log(JSON.parse(req.body.metadata))
