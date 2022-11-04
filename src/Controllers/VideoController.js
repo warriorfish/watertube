@@ -71,6 +71,13 @@ async function getVideo(req, res) {
     // Create the headers for sending packet
     const contentLength = end - start + 1
 
+    // increase view if seen till end
+
+    if (end === (videoSize-1)) {
+        video.views += 1
+        video.save()
+    }
+
     const headers = {
         "Content-Range": `bytes ${start}-${end}/${videoSize}`,
         'Accept-Ranges': 'bytes',
