@@ -97,8 +97,8 @@ async function alterSubscription(req,res) {
     }
 
     else{
-        userData.subscribedChannels.pop(channelId)
-        channel.subscribers.pop(userId)
+        userData.subscribedChannels.splice(userData.subscribedChannels.indexOf(userId),1)
+        channel.subscribers.splice(channel.subscribers.indexOf(userId),1)
     }
 
     await userData.save()
