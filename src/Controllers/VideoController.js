@@ -13,6 +13,7 @@ async function createVideo(req, res) {
             error: 'Only mp4 acceptable for video',
             recieved: videoFile.mimetype,
         })
+        return
     } else if (
         thumbnailFile.mimetype !== 'image/png' &&
         thumbnailFile.mimetype !== 'image/jpeg'
@@ -21,6 +22,7 @@ async function createVideo(req, res) {
             error: 'Only jpeg or png acceptable as thumbnail',
             recieved: thumbnailFile.mimetype,
         })
+        return
     }
 
     const video = new videoModel({
@@ -90,4 +92,87 @@ async function getVideo(req, res) {
     videoStream.pipe(res)
 }
 
-export { createVideo, getVideoMetadata , getVideo}
+async function likeVideo(req,res) {
+    const videoId = req.params.id
+    const video = await videoModel.findById(videoId)
+
+    const userId = req.body.userId
+
+    if (userId === video.creator){
+        res.status(403).json({error: "Can not like or dislike own video"})
+        return
+    }
+
+    const user = await usersModel.findById(userId)
+
+    const isNotLiked = user.likedVideos.every(id => {
+        return id !== videoId
+    })
+
+    const isDisliked = user.dislikedVideos.some(id => {
+        return id === videoId
+    })
+
+    if(isDisliked) {
+        video.dislikes -= 1
+        user.dislikedVideos.splice(user.dislikedVideos.indexOf(videoId),1)
+    }
+
+    if (isNotLiked) {
+        video.likes += 1
+        user.likedVideos.push(videoId)
+    }
+
+    else {
+        video.likes -= 1
+        user.likedVideos.splice(user.likedVideos.indexOf(videoId),1)
+    }
+
+    video.save()
+    user.save()
+    
+    res.sendStatus(200)
+}
+
+async function dislikeVideo(req,res) {
+    const videoId = req.params.id
+    const video = await videoModel.findById(videoId)
+
+    const userId = req.body.userId
+
+    if (userId === video.creator){
+        res.status(403).json({error: "Can not like or dislike own video"})
+        return
+    }
+
+    const user = await usersModel.findById(userId)
+
+    const isNotDisliked = user.dislikedVideos.every(id => {
+        return id !== videoId
+    })
+
+    const isLiked = user.likedVideos.some(id => {
+        return id === videoId
+    })
+
+    if(isLiked) {
+        video.likes -= 1
+        user.likedVideos.splice(user.likedVideos.indexOf(videoId),1)
+    }
+
+    if (isNotDisliked) {
+        video.dislikes += 1
+        user.dislikedVideos.push(videoId)
+    }
+
+    else {
+        video.dislikes -= 1
+        user.dislikedVideos.splice(user.dislikedVideos.indexOf(videoId),1)
+    }
+
+    video.save()
+    user.save()
+    
+    res.sendStatus(200)
+}
+export { createVideo, getVideoMetadata , getVideo, likeVideo, dislikeVideo}

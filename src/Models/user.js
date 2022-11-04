@@ -38,6 +38,16 @@ const userSchema = new mongoose.Schema({
         type: [String],
         default: [],
     },
+
+    likedVideos: {
+        type: [String],
+        default: [],
+    },
+
+    dislikedVideos: {
+        type: [String],
+        default: [],
+    },
 })
 
 const usersModel = mongoose.model('User', userSchema)
