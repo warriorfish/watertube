@@ -1,7 +1,7 @@
 import express from 'express'
 import multer from 'multer'
 import { uuid } from 'uuidv4'
-import { createVideo, getVideoMetadata} from '../Controllers/VideoController.js'
+import { createVideo, getVideo, getVideoMetadata} from '../Controllers/VideoController.js'
 import { validateToken} from '../utils.js'
 
 const storage = multer.diskStorage({
@@ -55,5 +55,7 @@ router.post('/', uploadHandler.fields([
 ]), validateToken, createVideo)
 
 router.get('/:id',getVideoMetadata)
+
+router.get('/:id/videoData/',getVideo)
 
 export default router
