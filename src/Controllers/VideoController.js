@@ -175,4 +175,26 @@ async function dislikeVideo(req,res) {
     
     res.sendStatus(200)
 }
-export { createVideo, getVideoMetadata , getVideo, likeVideo, dislikeVideo}
+
+async function deleteVideo(req,res) {
+    const userId = req.body.userId
+    const videoId = req.params.id
+
+    const video = await videoModel.findById(videoId)
+
+    if (video.creator !== userId) {
+        res.status(403).json({error: "Can only delete own video"})
+        return
+    }
+
+    await videoModel.findByIdAndDelete(videoId)
+    fs.rm(video.thumbnail,err=>{
+        if(err){console.log(err)}
+    })
+    fs.rm(video.filePath,err=>{
+        if(err){console.log(err)}
+    })
+    res.sendStatus(200)
+}
+
+export { createVideo, getVideoMetadata , getVideo, likeVideo, dislikeVideo,deleteVideo}
